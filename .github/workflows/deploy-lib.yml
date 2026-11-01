@@ -1,0 +1,125 @@
+name: Deploy lib
+
+on:
+  push:
+    tags:
+      - '[0-9]*.*.*'
+
+jobs:
+  notify-start:
+    name: Notify deploy started
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram message
+        run: |
+          TEXT=$(cat <<'EOF'
+          🚀 *WATA SDK for NestJS — publishing started*
+
+          📦 Package: `@tsforge7/wata-sdk-nestjs`
+          _NestJS module for the WATA SDK_
+
+          🏷 Version: `${{ github.ref_name }}`
+          👤 Author: ${{ github.actor }}
+          🔀 Commit: `${{ github.sha }}`
+
+          [Repository](https://github.com/${{ github.repository }}) • [Build log](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          EOF
+          )
+          curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d message_thread_id="${{ secrets.TELEGRAM_THREAD_ID }}" \
+            -d parse_mode="Markdown" \
+            -d disable_web_page_preview=true \
+            --data-urlencode "text=${TEXT}"
+
+  build:
+    name: Lint, build and publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check tag matches package version
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "${GITHUB_REF_NAME}" != "${PKG_VERSION}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package.json version ${PKG_VERSION}"
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      # Trusted publishing (OIDC), no token: deploy-lib.yml is a trusted publisher of the package on
+      # npmjs.com. The first version of a new package is published by hand (README, Release)
+      - name: Publish package on NPM
+        run: npm publish --access public --provenance
+
+  notify-success:
+    name: Notify published
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram message
+        run: |
+          TEXT=$(cat <<'EOF'
+          ✅ *WATA SDK for NestJS ${{ github.ref_name }} published to npm*
+
+          📦 `npm install @tsforge7/wata-sdk-nestjs@${{ github.ref_name }}`
+
+          👤 Release author: ${{ github.actor }}
+          🔀 Commit: `${{ github.sha }}`
+
+          [Package on npm](https://www.npmjs.com/package/@tsforge7/wata-sdk-nestjs) • [Repository](https://github.com/${{ github.repository }})
+          EOF
+          )
+          curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d message_thread_id="${{ secrets.TELEGRAM_THREAD_ID }}" \
+            -d parse_mode="Markdown" \
+            -d disable_web_page_preview=true \
+            --data-urlencode "text=${TEXT}"
+
+  notify-error:
+    name: Notify failure
+    needs: [build]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send error notification
+        run: |
+          TEXT=$(cat <<'EOF'
+          ❌ *WATA SDK for NestJS ${{ github.ref_name }} — publishing failed*
+
+          One of the steps (lint / build / publish) failed.
+
+          👤 Author: ${{ github.actor }}
+          🔀 Commit: `${{ github.sha }}`
+
+          [View logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          EOF
+          )
+          curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d message_thread_id="${{ secrets.TELEGRAM_THREAD_ID }}" \
+            -d parse_mode="Markdown" \
+            -d disable_web_page_preview=true \
+            --data-urlencode "text=${TEXT}"

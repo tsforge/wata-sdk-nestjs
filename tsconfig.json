@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "rootDir": "./src",
+        "outDir": "./build",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "skipLibCheck": true,
+        "types": ["node"],
+        "lib": ["es2020"],
+        "declaration": true,
+        "declarationMap": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "build"]
+}
