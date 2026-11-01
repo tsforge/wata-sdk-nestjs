@@ -13,7 +13,7 @@ jobs:
       - name: Send Telegram message
         run: |
           TEXT=$(cat <<'EOF'
-          🚀 *WATA SDK for NestJS — publishing started*
+          🚀 *WATA SDK for NestJS - publishing started*
 
           📦 Package: `@tsforge7/wata-sdk-nestjs`
           _NestJS module for the WATA SDK_
@@ -107,7 +107,7 @@ jobs:
       - name: Send error notification
         run: |
           TEXT=$(cat <<'EOF'
-          ❌ *WATA SDK for NestJS ${{ github.ref_name }} — publishing failed*
+          ❌ *WATA SDK for NestJS ${{ github.ref_name }} - publishing failed*
 
           One of the steps (lint / build / publish) failed.
 

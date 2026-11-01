@@ -9,17 +9,12 @@ npm install @tsforge7/wata-sdk-nestjs @tsforge7/wata-sdk
 ```
 
 ![npm version](https://img.shields.io/npm/v/@tsforge7/wata-sdk-nestjs)
-![Downloads](https://img.shields.io/npm/dt/@tsforge7/wata-sdk-nestjs)
 ![License](https://img.shields.io/npm/l/@tsforge7/wata-sdk-nestjs)
 ![Build Status](https://img.shields.io/github/actions/workflow/status/tsforge/wata-sdk-nestjs/ci.yml)
-![Types](https://img.shields.io/npm/types/@tsforge7/wata-sdk-nestjs)
-![Node](https://img.shields.io/node/v/@tsforge7/wata-sdk-nestjs)
-![npm unpacked size](https://img.shields.io/npm/unpacked-size/@tsforge7/wata-sdk-nestjs)
-![Last Update](https://img.shields.io/npm/last-update/@tsforge7/wata-sdk-nestjs)
 
 NestJS-модуль для эквайринга [WATA](https://wata.pro): платёжные ссылки, H2H-платежи картой/СБП/T-Pay, возвраты, подписки, баланс и проверка подписи webhook-уведомлений.
 
-Это обёртка над [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sdk) — она регистрирует готовый экземпляр `Wata` в DI-контейнере NestJS и даёт декоратор `@InjectWata()` для внедрения в сервисы.
+Это обёртка над [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sdk) - она регистрирует готовый экземпляр `Wata` в DI-контейнере NestJS и даёт декоратор `@InjectWata()` для внедрения в сервисы.
 
 📖 [Официальная документация WATA](https://api.wata.pro) · [Документация SDK](https://github.com/tsforge/wata-sdk)
 
@@ -30,9 +25,9 @@ NestJS-модуль для эквайринга [WATA](https://wata.pro): пла
 - [Установка](#установка)
 - [Быстрый старт](#быстрый-старт)
 - [Конфигурация](#конфигурация)
-    - [Синхронная — `forRoot()`](#синхронная--forroot)
+    - [Синхронная - `forRoot()`](#синхронная---forroot)
     - [Множественные инстансы](#множественные-инстансы)
-    - [Асинхронная — `forRootAsync()`](#асинхронная--forrootasync)
+    - [Асинхронная - `forRootAsync()`](#асинхронная---forrootasync)
 - [Что умеет SDK](#что-умеет-sdk)
 - [Примеры](#примеры)
     - [Сервис](#сервис)
@@ -48,7 +43,7 @@ NestJS-модуль для эквайринга [WATA](https://wata.pro): пла
 
 ## Быстрый старт
 
-**1. Подключите модуль** — он глобальный, достаточно одного импорта в `AppModule`:
+**1. Подключите модуль** - он глобальный, достаточно одного импорта в `AppModule`:
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -84,7 +79,7 @@ export class PaymentService {
             failRedirectUrl: 'https://myshop.com/fail',
         });
 
-        // link.url — отправьте покупателя по этой ссылке
+        // link.url - отправьте покупателя по этой ссылке
         return link;
     }
 }
@@ -103,11 +98,11 @@ export class PaymentService {
 | `publicKey` | нет          | Публичный ключ для webhook в PEM. Без него ключ загружается из API и кешируется                    |
 | `fetch`     | нет          | Своя реализация `fetch`, например `undici` с прокси-агентом                                        |
 
-Токен выдаёт ваш менеджер WATA, также он доступен в личном кабинете мерчанта в разделе **«Терминалы»**. Конфигурация валидируется при старте приложения: если токена нет или он некорректен — упадёт сразу с понятной ошибкой, а не на первом запросе.
+Токен выдаёт ваш менеджер WATA, также он доступен в личном кабинете мерчанта в разделе **«Терминалы»**. Конфигурация валидируется при старте приложения: если токена нет или он некорректен - упадёт сразу с понятной ошибкой, а не на первом запросе.
 
-> ⚠️ **Никогда не коммитьте токен в git.** SDK работает только на сервере — храните токен в переменной окружения, он даёт полный доступ к терминалу.
+> ⚠️ **Никогда не коммитьте токен в git.** SDK работает только на сервере - храните токен в переменной окружения, он даёт полный доступ к терминалу.
 
-### Синхронная — `forRoot()`
+### Синхронная - `forRoot()`
 
 Подходит, когда токен доступен на этапе загрузки модуля:
 
@@ -117,7 +112,7 @@ WataNestjsModule.forRoot({
 });
 ```
 
-### Асинхронная — `forRootAsync()`
+### Асинхронная - `forRootAsync()`
 
 Подходит, когда токен приходит из `ConfigService` или другого провайдера:
 
@@ -142,7 +137,7 @@ export class AppModule {}
 
 ### Множественные инстансы
 
-Вызовите `forRoot()` / `forRootAsync()` несколько раз с разным `name`, чтобы зарегистрировать несколько независимых экземпляров `Wata` — например, несколько терминалов WATA в одном приложении. Без `name` получаете дефолтный инстанс, как и раньше.
+Вызовите `forRoot()` / `forRootAsync()` несколько раз с разным `name`, чтобы зарегистрировать несколько независимых экземпляров `Wata` - например, несколько терминалов WATA в одном приложении. Без `name` получаете дефолтный инстанс, как и раньше.
 
 ```typescript
 @Module({
@@ -164,7 +159,7 @@ export class PaymentService {
 }
 ```
 
-`name` работает так же и для `forRootAsync()`. Модуль остаётся `@Global()` — именованные инстансы доступны в любом месте приложения без повторных импортов.
+`name` работает так же и для `forRootAsync()`. Модуль остаётся `@Global()` - именованные инстансы доступны в любом месте приложения без повторных импортов.
 
 ## Что умеет SDK
 
@@ -185,7 +180,7 @@ export class PaymentService {
 | Публичный ключ для webhook                   | `wata.api.publicKey.get()`                 |
 | Проверка и разбор webhook                    | `wata.webhooks.parse()` / `.verify()`      |
 
-Константы (`CURRENCY`, `TRANSACTION_STATUS`, `PAYMENT_LINK_STATUS`, `ERROR_CODE`...), zod-схемы и все типы запросов/ответов экспортируются из корня `@tsforge7/wata-sdk` — глубокие импорты не нужны. Полное описание — в [документации SDK](https://github.com/tsforge/wata-sdk).
+Константы (`CURRENCY`, `TRANSACTION_STATUS`, `PAYMENT_LINK_STATUS`, `ERROR_CODE`...), zod-схемы и все типы запросов/ответов экспортируются из корня `@tsforge7/wata-sdk` - глубокие импорты не нужны. Полное описание - в [документации SDK](https://github.com/tsforge/wata-sdk).
 
 ## Примеры
 
@@ -272,7 +267,7 @@ export class CreatePaymentLinkHandler implements ICommandHandler<
                 data: link, // link.url, link.id
             };
         } catch (error: unknown) {
-            // Невалидные параметры — SDK отклонил запрос ДО отправки (сумма, обязательные поля...)
+            // Невалидные параметры - SDK отклонил запрос ДО отправки (сумма, обязательные поля...)
             if (error instanceof ZodError) {
                 this.logger.error(
                     `[CreatePaymentLinkHandler] Invalid payment params: ${JSON.stringify(error.issues)}`,
@@ -304,7 +299,7 @@ export class CreatePaymentLinkHandler implements ICommandHandler<
 
 ### Webhook-уведомления
 
-WATA шлёт webhook при изменении статуса транзакции или подписки. У каждого webhook есть заголовок `X-Signature` — base64 подпись SHA512withRSA по **сырому** телу запроса:
+WATA шлёт webhook при изменении статуса транзакции или подписки. У каждого webhook есть заголовок `X-Signature` - base64 подпись SHA512withRSA по **сырому** телу запроса:
 
 ```typescript
 import { Controller, Post, Req, Res, HttpStatus } from '@nestjs/common';
@@ -319,14 +314,14 @@ export class WataWebhookController {
     @Post('webhook')
     public async handleWebhook(@Req() req: Request, @Res() res: Response) {
         try {
-            // req.body должен быть сырым, неразобранным телом (string или Buffer) — см. «Требования» ниже
+            // req.body должен быть сырым, неразобранным телом (string или Buffer) - см. «Требования» ниже
             const webhook = await this.wata.webhooks.parse(req.body, req.headers['x-signature']);
 
             if (
                 WebhookCommand.isTransactionWebhook(webhook) &&
                 webhook.transactionStatus === TRANSACTION_STATUS.Paid
             ) {
-                // Зачисляем webhook.orderId идемпотентно — WATA повторяет недоставленные webhook 32 часа
+                // Зачисляем webhook.orderId идемпотентно - WATA повторяет недоставленные webhook 32 часа
             }
 
             return res.status(HttpStatus.OK).end();
@@ -340,7 +335,7 @@ export class WataWebhookController {
 }
 ```
 
-Чтобы получить сырое тело в Nest/Express, для этого роута нужен raw body parser (например, `express.raw()`, подключённый до `app.listen()`, либо [`rawBody: true`](https://docs.nestjs.com/faq/raw-body) в `NestFactory.create`) — JSON, который разобрали и собрали обратно, подписи уже не соответствует.
+Чтобы получить сырое тело в Nest/Express, для этого роута нужен raw body parser (например, `express.raw()`, подключённый до `app.listen()`, либо [`rawBody: true`](https://docs.nestjs.com/faq/raw-body) в `NestFactory.create`) - JSON, который разобрали и собрали обратно, подписи уже не соответствует.
 
 ## Обработка ошибок
 
@@ -354,10 +349,10 @@ try {
     await this.wata.api.links.create({/* ... */});
 } catch (error) {
     if (error instanceof ZodError) {
-        // 1. Ошибка валидации ДО отправки запроса — невалидные параметры
+        // 1. Ошибка валидации ДО отправки запроса - невалидные параметры
         console.log(error.issues);
     } else if (error instanceof WataApiError) {
-        // 2. Ошибка API WATA — не-2xx ответ
+        // 2. Ошибка API WATA - не-2xx ответ
         console.log(error.status, error.code, error.message, error.body);
     } else {
         // 3. Сетевая ошибка или таймаут (обычный Error / TypeError)
@@ -379,11 +374,11 @@ try {
 | ------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `WataNestjsModule.forRoot(options)`   | Синхронная конфигурация. `options.name` регистрирует именованный инстанс вместо дефолтного |
 | `WataNestjsModule.forRootAsync(opts)` | Асинхронная конфигурация (`useFactory` / `imports` / `inject`), `name` работает так же     |
-| `@InjectWata(name?)`                  | Декоратор для внедрения экземпляра `Wata` — дефолтного или зарегистрированного под `name`  |
+| `@InjectWata(name?)`                  | Декоратор для внедрения экземпляра `Wata` - дефолтного или зарегистрированного под `name`  |
 | `getWataToken(name?)`                 | DI-токен для инстанса с данным именем, для ручных провайдеров                              |
 | `IWataModuleOptions`                  | Тип опций модуля (`token`, `apiUrl?`, `currency?`, `timeout?`, `publicKey?`, `fetch?`)     |
 
-Модуль помечен `@Global()` — подключается один раз в корневом модуле, после чего `@InjectWata()` работает в любом месте приложения без повторных импортов.
+Модуль помечен `@Global()` - подключается один раз в корневом модуле, после чего `@InjectWata()` работает в любом месте приложения без повторных импортов.
 
 ## Требования
 
@@ -393,11 +388,11 @@ try {
 
 ## Как внести изменения
 
-**Нашли баг?** Создайте [Issue](https://github.com/tsforge/wata-sdk-nestjs/issues/new) — опишите, что делали, что ожидали и что получили (код ошибки, версии модуля, SDK и Node). Никогда не указывайте в issue свой токен и данные реальных транзакций.
+**Нашли баг?** Создайте [Issue](https://github.com/tsforge/wata-sdk-nestjs/issues/new) - опишите, что делали, что ожидали и что получили (код ошибки, версии модуля, SDK и Node). Никогда не указывайте в issue свой токен и данные реальных транзакций.
 
-**Хотите предложить изменение?** Прямые пуши в репозиторий закрыты — изменения принимаются через Merge Request из форка:
+**Хотите предложить изменение?** Прямые пуши в репозиторий закрыты - изменения принимаются через Merge Request из форка:
 
-1. **Сделайте форк** репозитория — кнопка «Fork» на странице [tsforge/wata-sdk-nestjs](https://github.com/tsforge/wata-sdk-nestjs).
+1. **Сделайте форк** репозитория - кнопка «Fork» на странице [tsforge/wata-sdk-nestjs](https://github.com/tsforge/wata-sdk-nestjs).
 2. **Склонируйте форк** и создайте ветку:
 
     ```bash
@@ -415,9 +410,9 @@ try {
     npm run format    # prettier
     ```
 
-    Комментарии в коде — на английском.
+    Комментарии в коде - на английском.
 
-4. **Запушьте ветку в свой форк** и откройте Merge Request в `main` основного репозитория. Опишите, что и зачем изменили; если MR закрывает issue — сошлитесь на него (`Closes #N`).
+4. **Запушьте ветку в свой форк** и откройте Merge Request в `main` основного репозитория. Опишите, что и зачем изменили; если MR закрывает issue - сошлитесь на него (`Closes #N`).
 
 ## Лицензия
 

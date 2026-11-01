@@ -1,6 +1,6 @@
 {
     "name": "@tsforge7/wata-sdk-nestjs",
-    "version": "0.1.1",
+    "version": "0.1.3",
     "main": "build/index.js",
     "types": "build/index.d.ts",
     "files": [

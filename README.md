@@ -9,17 +9,12 @@ npm install @tsforge7/wata-sdk-nestjs @tsforge7/wata-sdk
 ```
 
 ![npm version](https://img.shields.io/npm/v/@tsforge7/wata-sdk-nestjs)
-![Downloads](https://img.shields.io/npm/dt/@tsforge7/wata-sdk-nestjs)
 ![License](https://img.shields.io/npm/l/@tsforge7/wata-sdk-nestjs)
 ![Build Status](https://img.shields.io/github/actions/workflow/status/tsforge/wata-sdk-nestjs/ci.yml)
-![Types](https://img.shields.io/npm/types/@tsforge7/wata-sdk-nestjs)
-![Node](https://img.shields.io/node/v/@tsforge7/wata-sdk-nestjs)
-![npm unpacked size](https://img.shields.io/npm/unpacked-size/@tsforge7/wata-sdk-nestjs)
-![Last Update](https://img.shields.io/npm/last-update/@tsforge7/wata-sdk-nestjs)
 
 NestJS module for the [WATA](https://wata.pro) acquiring API: payment links, H2H payments by card/SBP/T-Pay, refunds, subscriptions, balance and webhook signature verification.
 
-This is a wrapper around [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sdk) — it registers a ready-to-use `Wata` instance in the NestJS DI container and provides the `@InjectWata()` decorator for injecting it into your services.
+This is a wrapper around [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sdk) - it registers a ready-to-use `Wata` instance in the NestJS DI container and provides the `@InjectWata()` decorator for injecting it into your services.
 
 📖 [Official WATA documentation](https://api.wata.pro) · [SDK documentation](https://github.com/tsforge/wata-sdk)
 
@@ -30,8 +25,8 @@ This is a wrapper around [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sd
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Configuration](#configuration)
-    - [Synchronous — `forRoot()`](#synchronous--forroot)
-    - [Asynchronous — `forRootAsync()`](#asynchronous--forrootasync)
+    - [Synchronous - `forRoot()`](#synchronous---forroot)
+    - [Asynchronous - `forRootAsync()`](#asynchronous---forrootasync)
     - [Multiple instances](#multiple-instances)
 - [What the SDK can do](#what-the-sdk-can-do)
 - [Examples](#examples)
@@ -48,7 +43,7 @@ This is a wrapper around [@tsforge7/wata-sdk](https://github.com/tsforge/wata-sd
 
 ## Quick start
 
-**1. Import the module** — it is global, a single import in `AppModule` is enough:
+**1. Import the module** - it is global, a single import in `AppModule` is enough:
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -84,7 +79,7 @@ export class PaymentService {
             failRedirectUrl: 'https://myshop.com/fail',
         });
 
-        // link.url — redirect the customer to this link
+        // link.url - redirect the customer to this link
         return link;
     }
 }
@@ -105,9 +100,9 @@ export class PaymentService {
 
 The token is issued by your WATA manager and is also available in the merchant dashboard under **Terminals**. The config is validated at application startup: a missing or malformed token fails immediately with a clear error, not on the first request.
 
-> ⚠️ **Never commit the token to git.** The SDK runs on the server only — keep the token in an environment variable, it gives full access to the terminal.
+> ⚠️ **Never commit the token to git.** The SDK runs on the server only - keep the token in an environment variable, it gives full access to the terminal.
 
-### Synchronous — `forRoot()`
+### Synchronous - `forRoot()`
 
 Use it when the token is available at module load time:
 
@@ -117,7 +112,7 @@ WataNestjsModule.forRoot({
 });
 ```
 
-### Asynchronous — `forRootAsync()`
+### Asynchronous - `forRootAsync()`
 
 Use it when the token comes from `ConfigService` or another provider:
 
@@ -142,7 +137,7 @@ export class AppModule {}
 
 ### Multiple instances
 
-Call `forRoot()` / `forRootAsync()` more than once with a different `name` to register several independent `Wata` instances — e.g. several WATA terminals in one app. Without `name` you get the default instance, exactly as above.
+Call `forRoot()` / `forRootAsync()` more than once with a different `name` to register several independent `Wata` instances - e.g. several WATA terminals in one app. Without `name` you get the default instance, exactly as above.
 
 ```typescript
 @Module({
@@ -185,7 +180,7 @@ The injected `Wata` instance gives access to the REST API (`wata.api`) and to we
 | Webhook public key                      | `wata.api.publicKey.get()`                 |
 | Verify and parse a webhook              | `wata.webhooks.parse()` / `.verify()`      |
 
-Constants (`CURRENCY`, `TRANSACTION_STATUS`, `PAYMENT_LINK_STATUS`, `ERROR_CODE`...), zod schemas and all request/response types are exported from the root of `@tsforge7/wata-sdk` — no deep imports needed. Full reference — in the [SDK documentation](https://github.com/tsforge/wata-sdk).
+Constants (`CURRENCY`, `TRANSACTION_STATUS`, `PAYMENT_LINK_STATUS`, `ERROR_CODE`...), zod schemas and all request/response types are exported from the root of `@tsforge7/wata-sdk` - no deep imports needed. Full reference - in the [SDK documentation](https://github.com/tsforge/wata-sdk).
 
 ## Examples
 
@@ -272,7 +267,7 @@ export class CreatePaymentLinkHandler implements ICommandHandler<
                 data: link, // link.url, link.id
             };
         } catch (error: unknown) {
-            // Invalid params — the SDK rejected the request BEFORE sending (amount, required fields...)
+            // Invalid params - the SDK rejected the request BEFORE sending (amount, required fields...)
             if (error instanceof ZodError) {
                 this.logger.error(
                     `[CreatePaymentLinkHandler] Invalid payment params: ${JSON.stringify(error.issues)}`,
@@ -304,7 +299,7 @@ export class CreatePaymentLinkHandler implements ICommandHandler<
 
 ### Webhooks
 
-WATA sends a webhook when a transaction or a subscription changes. Every webhook has the `X-Signature` header — a base64 SHA512withRSA signature of the **raw** request body:
+WATA sends a webhook when a transaction or a subscription changes. Every webhook has the `X-Signature` header - a base64 SHA512withRSA signature of the **raw** request body:
 
 ```typescript
 import { Controller, Post, Req, Res, HttpStatus } from '@nestjs/common';
@@ -319,14 +314,14 @@ export class WataWebhookController {
     @Post('webhook')
     public async handleWebhook(@Req() req: Request, @Res() res: Response) {
         try {
-            // req.body must be the raw, unparsed body (string or Buffer) — see "Requirements" below
+            // req.body must be the raw, unparsed body (string or Buffer) - see "Requirements" below
             const webhook = await this.wata.webhooks.parse(req.body, req.headers['x-signature']);
 
             if (
                 WebhookCommand.isTransactionWebhook(webhook) &&
                 webhook.transactionStatus === TRANSACTION_STATUS.Paid
             ) {
-                // Credit webhook.orderId idempotently — WATA retries undelivered webhooks for 32 hours
+                // Credit webhook.orderId idempotently - WATA retries undelivered webhooks for 32 hours
             }
 
             return res.status(HttpStatus.OK).end();
@@ -340,7 +335,7 @@ export class WataWebhookController {
 }
 ```
 
-Getting the raw body in Nest/Express requires a raw body parser for this route (e.g. `express.raw()` mounted before `app.listen()`, or [`rawBody: true`](https://docs.nestjs.com/faq/raw-body) in `NestFactory.create`) — JSON that was parsed and serialized again no longer matches the signature.
+Getting the raw body in Nest/Express requires a raw body parser for this route (e.g. `express.raw()` mounted before `app.listen()`, or [`rawBody: true`](https://docs.nestjs.com/faq/raw-body) in `NestFactory.create`) - JSON that was parsed and serialized again no longer matches the signature.
 
 ## Error handling
 
@@ -354,10 +349,10 @@ try {
     await this.wata.api.links.create({/* ... */});
 } catch (error) {
     if (error instanceof ZodError) {
-        // 1. Validation error BEFORE the request is sent — invalid parameters
+        // 1. Validation error BEFORE the request is sent - invalid parameters
         console.log(error.issues);
     } else if (error instanceof WataApiError) {
-        // 2. WATA API error — non-2xx response
+        // 2. WATA API error - non-2xx response
         console.log(error.status, error.code, error.message, error.body);
     } else {
         // 3. Network failure or timeout (plain Error / TypeError)
@@ -379,11 +374,11 @@ try {
 | ------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `WataNestjsModule.forRoot(options)`   | Synchronous configuration. `options.name` registers a named instance instead of the default |
 | `WataNestjsModule.forRootAsync(opts)` | Asynchronous configuration (`useFactory` / `imports` / `inject`), `name` works the same way |
-| `@InjectWata(name?)`                  | Decorator that injects the `Wata` instance — default, or the one registered under `name`    |
+| `@InjectWata(name?)`                  | Decorator that injects the `Wata` instance - default, or the one registered under `name`    |
 | `getWataToken(name?)`                 | DI token for a given instance name, for manual providers                                    |
 | `IWataModuleOptions`                  | Module options type (`token`, `apiUrl?`, `currency?`, `timeout?`, `publicKey?`, `fetch?`)   |
 
-The module is marked `@Global()` — import it once in the root module, after that `@InjectWata()` works anywhere in the application without re-imports.
+The module is marked `@Global()` - import it once in the root module, after that `@InjectWata()` works anywhere in the application without re-imports.
 
 ## Requirements
 
@@ -393,11 +388,11 @@ The module is marked `@Global()` — import it once in the root module, after th
 
 ## Contributing
 
-**Found a bug?** Open an [Issue](https://github.com/tsforge/wata-sdk-nestjs/issues/new) — describe what you did, what you expected and what you got (error code, module, SDK and Node versions). Please never include your token or real transaction data in an issue.
+**Found a bug?** Open an [Issue](https://github.com/tsforge/wata-sdk-nestjs/issues/new) - describe what you did, what you expected and what you got (error code, module, SDK and Node versions). Please never include your token or real transaction data in an issue.
 
-**Want to propose a change?** Direct pushes to the repository are not allowed — changes are accepted via a Merge Request from a fork:
+**Want to propose a change?** Direct pushes to the repository are not allowed - changes are accepted via a Merge Request from a fork:
 
-1. **Fork** the repository — the "Fork" button on the [tsforge/wata-sdk-nestjs](https://github.com/tsforge/wata-sdk-nestjs) page.
+1. **Fork** the repository - the "Fork" button on the [tsforge/wata-sdk-nestjs](https://github.com/tsforge/wata-sdk-nestjs) page.
 2. **Clone your fork** and create a branch:
 
     ```bash
